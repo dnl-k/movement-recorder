@@ -1,0 +1,13 @@
+<meta>
+	<info author="dnlk" name="Movement Recorder" description="A tool to record movement, who would have thought" version="1.0.0" type="misc" />
+	<oop>true</oop>
+
+	<script src="client/utils.lua" type="client" />
+	<script src="client/init.lua" type="client" />
+	<script src="client/movementRecorder.lua" type="client" />
+	<script src="client/interface.lua" type="client" />
+
+
+	<script src="server/createVehicle.lua" type="server" />
+
+</meta>
