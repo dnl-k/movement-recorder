@@ -42,7 +42,7 @@ function MR:init()
   self.playback.ped:warpIntoVehicle(self.playback.vehicle)
 
   self:setupControls()
-  addEventHandler('onClientRender', root, function() self:onClientRender() end)
+  addEventHandler("onClientRender", root, function() self:onClientRender() end)
   return self
 end
 
@@ -59,7 +59,7 @@ function MR:resetVehicle(vehicle)
   vehicle:setCollisionsEnabled(false)
   vehicle:setOverrideLights(2)
   vehicle:addUpgrade(1010)
-  vehicle:setData('movementrecorder.frame', nil)
+  vehicle:setData("movementrecorder.frame", nil)
   vehicle:setDimension(localPlayer.dimension + 1)
 end
 
@@ -127,16 +127,16 @@ function MR:renderText()
 
   if self.preview.isVisible and self.focusedFrame then
     local frame = self.frames[self.focusedFrame]
-    drawHighlighterText('Press ' .. self:getControlKey('place_vehicle') .. ' to place the recorded vehicle', w * cursorPosition.x, h * cursorPosition.y, 32)
+    drawHighlighterText("Press " .. self:getControlKey("place_vehicle") .. " to place the recorded vehicle", w * cursorPosition.x, h * cursorPosition.y, 32)
 
     if frame.nitroCount then
-      local nitroText = string.format('Nitro Level: %.2f %s', frame.nitroLevel, (frame.isNitroActivated and '#00ff00•' or (frame.isNitroRecharging and '#ffa500•' or '#ff0000•')))
+      local nitroText = string.format("Nitro Level: %.2f %s", frame.nitroLevel, (frame.isNitroActivated and "#00ff00•" or (frame.isNitroRecharging and "#ffa500•" or "#ff0000•")))
       drawHighlighterText(nitroText, w * cursorPosition.x, h * cursorPosition.y, 48)
     end
 
   elseif not self.preview.isVisible and self.focusedFrame then
-    drawHighlighterText('Hold ' .. self:getControlKey('preview_vehicle') .. ' to view the recorded vehicle', w * cursorPosition.x, h * cursorPosition.y, 32)
-    drawHighlighterText('Press ' .. self:getControlKey('playback') .. ' to start playback from here', w * cursorPosition.x, h * cursorPosition.y, 48)
+    drawHighlighterText("Hold " .. self:getControlKey("preview_vehicle") .. " to view the recorded vehicle", w * cursorPosition.x, h * cursorPosition.y, 32)
+    drawHighlighterText("Press " .. self:getControlKey("playback") .. " to start playback from here", w * cursorPosition.x, h * cursorPosition.y, 48)
   end
 end
 
@@ -145,7 +145,7 @@ end
 -- Displays vehicle while hovering over recorded nodes
 -------------------------------------
 function MR:renderVehicle()
-  if self.preview.isVisible and (not self:getControlState('preview_vehicle') or not self.focusedFrame) then
+  if self.preview.isVisible and (not self:getControlState("preview_vehicle") or not self.focusedFrame) then
     exports.editor_main:enableMouseOver(true)
     exports.editor_main:setWorldClickEnabled(true)
     self:resetVehicle(self.preview.vehicle)
@@ -154,15 +154,15 @@ function MR:renderVehicle()
     return
   end
 
-  if not isCursorShowing() or not self:getControlState('preview_vehicle') or not self.focusedFrame then return end
+  if not isCursorShowing() or not self:getControlState("preview_vehicle") or not self.focusedFrame then return end
 
   exports.editor_main:enableMouseOver(false)
   exports.editor_main:setWorldClickEnabled(false)
 
-  if self.preview.vehicle:getData('movementrecorder.frame') == self.focusedFrame then return end
+  if self.preview.vehicle:getData("movementrecorder.frame") == self.focusedFrame then return end
   local frame = self.frames[self.focusedFrame]
 
-  self.preview.vehicle:setData('movementrecorder.frame', self.focusedFrame)
+  self.preview.vehicle:setData("movementrecorder.frame", self.focusedFrame)
   self.preview.vehicle:setModel(frame.model)
   self.preview.vehicle:setPosition(frame.position)
   self.preview.vehicle:setRotation(frame.rotation)
@@ -177,7 +177,7 @@ end
 -------------------------------------
 function MR:doPlaceVehicle()
   if not self.focusedFrame then return end
-  triggerServerEvent('mr:createVehicle', localPlayer, {
+  triggerServerEvent("mr:createVehicle", localPlayer, {
     model = self.preview.vehicle:getModel(),
     position = {
       self.preview.vehicle.position.x,
@@ -209,7 +209,7 @@ function MR:toggleRecording(forcedState)
   elseif self.state or (type(forcedState) == "boolean" and forcedState == false) then
     self.state = false
   end
-  triggerEvent('onRecordingStateChange', resourceRoot, self.state)
+  triggerEvent("onRecordingStateChange", resourceRoot, self.state)
 end
 
 
@@ -253,7 +253,7 @@ function MR:togglePlayback(forcedState)
     self:resetPed(self.playback.ped)
     self:resetVehicle(self.playback.vehicle)
   end
-  triggerEvent('onPlaybackStateChange', resourceRoot, self.playback.state)
+  triggerEvent("onPlaybackStateChange", resourceRoot, self.playback.state)
 end
 
 function MR:renderPlayback()

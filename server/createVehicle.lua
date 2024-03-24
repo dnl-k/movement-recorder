@@ -1,8 +1,8 @@
-addEvent('mr:createVehicle', true)
-addEventHandler('mr:createVehicle', root, function(parameters)
-  local id = 'MR:Vehicle (' .. countVehicles() .. ')'
+addEvent("mr:createVehicle", true)
+addEventHandler("mr:createVehicle", root, function(parameters)
+  local id = "MR:Vehicle (" .. countVehicles() .. ")"
 
-  local element = exports.edf:edfCreateElement('vehicle', client, getResourceFromName('editor_main'), {
+  local element = exports.edf:edfCreateElement("vehicle", client, getResourceFromName("editor_main"), {
     model = parameters.model,
     position = parameters.position,
     rotation = parameters.rotation,
@@ -25,8 +25,8 @@ end)
 
 function countVehicles()
 	local counter = 0
-	for key, element in pairs(getElementsByType('vehicle')) do
-    if string.find(element:getID(), 'MR:Vehicle') then counter = counter + 1 end
+	for key, element in pairs(getElementsByType("vehicle")) do
+    if string.find(element:getID(), "MR:Vehicle") then counter = counter + 1 end
 	end
 	return counter
 end
