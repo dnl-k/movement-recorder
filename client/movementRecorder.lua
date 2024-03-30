@@ -122,7 +122,7 @@ end
 -- Displays text while hovering over recorded nodes
 -------------------------------------
 function MR:renderText()
-  if not isCursorShowing() then return end
+  if not isCursorShowing() or GuiElement.isMTAWindowActive() or GuiElement.isInputEnabled() then return end
   local cursorPosition = Vector2(getCursorPosition())
 
   if self.preview.isVisible and self.focusedFrame then
@@ -215,7 +215,7 @@ end
 
 function MR:record()
   local vehicle = localPlayer:getOccupiedVehicle()
-  if not vehicle then self:toggleRecording(false) return end
+  if not vehicle or localPlayer:isDead() then self:toggleRecording(false) return end
   
   table.insert(self.frames, {
     model = vehicle:getModel(),
