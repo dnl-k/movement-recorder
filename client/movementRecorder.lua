@@ -1,5 +1,4 @@
 MR = {
-  controls = {},
   state = false,
   frames = {},
   focusedFrame = nil,
@@ -24,12 +23,13 @@ MR = {
 
 function MR:init()
   setmetatable({}, MR.metatable)
-  self.controls = {
+
+  controls:add({
     ["record_movement"]   =   { key = "r",        friendlyName = "Record Movement",     handler = function() self:toggleRecording() end },
     ["playback"]          =   { key="p",          friendlyName = "Playback Recording",  handler = function() self:togglePlayback() end },
     ["preview_vehicle"]   =   { key = "lctrl",    friendlyName = "Preview Vehicle" },
     ["place_vehicle"]     =   { key = "mouse3",   friendlyName = "Place Vehicle",       handler = function() self:doPlaceVehicle() end }
-  }
+  })
 
   self:resetPed(self.playback.ped)
   self:resetVehicle(self.playback.vehicle)
@@ -41,7 +41,6 @@ function MR:init()
   
   self.playback.ped:warpIntoVehicle(self.playback.vehicle)
 
-  self:setupControls()
   addEventHandler("onClientRender", root, function() self:onClientRender() end)
   return self
 end
@@ -68,32 +67,6 @@ function MR:resetPed(ped)
   ped:setPosition(0.0, 0.0, 0.0)
   ped:setDimension(localPlayer.dimension + 1)
 end
-
--------------------------------------
--- Setup key bindings and commands
--------------------------------------
-
-
--------- TODO: Rework Controls
-function MR:setupControls()
-  for i, control in pairs(self.controls) do
-    addCommandHandler(control.friendlyName, control.handler and control.handler or function() end )
-    bindKey(control.key, "down", control.friendlyName)
-  end
-end
-
-function MR:getControlState(control)
-  if self.controls[control] == nil then return false end
-  local key = getKeyBoundToCommand(self.controls[control].friendlyName)
-  local keyState = getKeyState(key)
-  return keyState
-end
-
-function MR:getControlKey(control)
-  if self.controls[control] == nil then return false end
-  return getKeyBoundToCommand(self.controls[control].friendlyName)
-end
-
 
 function MR:onClientRender()
   local cursorPosition = Vector2(getCursorPosition())
@@ -127,25 +100,25 @@ function MR:renderText()
 
   if self.preview.isVisible and self.focusedFrame then
     local frame = self.frames[self.focusedFrame]
-    drawHighlighterText("Press " .. self:getControlKey("place_vehicle") .. " to place the recorded vehicle", w * cursorPosition.x, h * cursorPosition.y, 32)
+    drawHighlighterText(("Press %s to place the recorded vehicle"):format(controls:getKey("place_vehicle")), w * cursorPosition.x, h * cursorPosition.y, 32)
 
     if frame.nitroCount then
-      local nitroText = string.format("Nitro Level: %.2f %s", frame.nitroLevel, (frame.isNitroActivated and "#00ff00•" or (frame.isNitroRecharging and "#ffa500•" or "#ff0000•")))
-      drawHighlighterText(nitroText, w * cursorPosition.x, h * cursorPosition.y, 48)
+      drawHighlighterText(("Nitro Level: %.2f %s"):format(frame.nitroLevel, (frame.isNitroActivated and "#00ff00•" or (frame.isNitroRecharging and "#ffa500•" or "#ff0000•"))), w * cursorPosition.x, h * cursorPosition.y, 48)
     end
 
   elseif not self.preview.isVisible and self.focusedFrame then
-    drawHighlighterText("Hold " .. self:getControlKey("preview_vehicle") .. " to view the recorded vehicle", w * cursorPosition.x, h * cursorPosition.y, 32)
-    drawHighlighterText("Press " .. self:getControlKey("playback") .. " to start playback from here", w * cursorPosition.x, h * cursorPosition.y, 48)
+    drawHighlighterText(("Hold %s to view the recorded vehicle"):format(controls:getKey("preview_vehicle")), w * cursorPosition.x, h * cursorPosition.y, 32)
+    drawHighlighterText(("Press %s to start playback from here"):format(controls:getKey("playback")), w * cursorPosition.x, h * cursorPosition.y, 48)
   end
 end
+
 
 
 -------------------------------------
 -- Displays vehicle while hovering over recorded nodes
 -------------------------------------
 function MR:renderVehicle()
-  if self.preview.isVisible and (not self:getControlState("preview_vehicle") or not self.focusedFrame) then
+  if self.preview.isVisible and (not control:getState("preview_vehicle") or not self.focusedFrame) then
     exports.editor_main:enableMouseOver(true)
     exports.editor_main:setWorldClickEnabled(true)
     self:resetVehicle(self.preview.vehicle)
@@ -154,7 +127,7 @@ function MR:renderVehicle()
     return
   end
 
-  if not isCursorShowing() or not self:getControlState("preview_vehicle") or not self.focusedFrame then return end
+  if not isCursorShowing() or not control:getState("preview_vehicle") or not self.focusedFrame then return end
 
   exports.editor_main:enableMouseOver(false)
   exports.editor_main:setWorldClickEnabled(false)
@@ -281,3 +254,4 @@ function MR:renderPlayback()
     self.playback.currentPosition = self.playback.startingPoint
   end
 end
+recorder = MR:init()
